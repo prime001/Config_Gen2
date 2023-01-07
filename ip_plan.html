@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Network Engineer - IP Plan</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+    <div class="jumbotron text-center" style="margin-bottom:0">
+        <h1>IP Plan!</h1>
+        <p>Enterprise Network IP Plan!</p>
+    </div>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <a class="navbar-brand" href="/">Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/config_gen/">Config Gen</a>
+                </li>
+                <!-- Dropdown Inventory-->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" href="/ip_plan/" id="ip_plan" data-toggle="dropdown">
+                        IP Plan
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="/ip_plan/">IP Plan</a>
+                        <a class="dropdown-item" href="#">Add</a>
+                        <a class="dropdown-item" href="#">Delete</a>
+                        <a class="dropdown-item" href="#">Modify</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/inventory/">Inventory</a>
+                <li class="nav-item">
+                    <a class="nav-link" href="/reports/">Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Wiki</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <br>
+    <b>Search by Sub</b>
+    <p>Currently showing sub: {{ sub }}</p>
+    <form method="GET" action="/ip_plan/" class="form" position="absolute" max-width="50px">
+        <label for="sub">Select Sub:</label>
+        <select class="form" name="sub" id="sub" width="50px" position="absolute" max-width="50px">
+            {%
+              set sub_options = ['ALL','ANS','BBX','BPS','C2U','CBC','CCG','CCI','DII','EAI','ECC',
+              'FBT','GCI','GSU','HPC','KCL','LCS','NEO','NFS','NSC','PAU','PUC','PTI','PTN','PVC',
+              'RJE','SGT','STC','TCC','TCS','TES','TEX','TRA','TJA','UTQ','VCI','WBC','WMC',
+                ]
+            %}
+            {% for sub_option in sub_options %}
+            <option value="{{ sub_option }}" {{ "selected" if sub_option == sub }}>{{ sub_option }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Update results</button>
+    </form>
+    <div class="result"></div>
+    <br>
+    <table border=5>
+        <thead>
+            <tr>
+                <td><b>Hostname</td>
+                <td><b>Model</td>
+                <td><b>Firmware</td>
+                <td><b>Serial</td>
+                <td><b>Vendor</td>
+                <td><b>Uptime</td>
+                <td><b>Supernet</td>
+                <td><b>Loopback</td>
+                <td><b>Isp1</td>
+                <td><b>Core_Link</td>
+                <td><b>Isp2</td>
+                <td><b>st0.0</td>
+                <td><b>st0.1</td>
+                <td><b>st0.10</td>
+                <td><b>st0.11</td>
+                <td><b>Neighbor_device</td>
+                <td><b>Neighbor_port</td>
+                <td><b>smnp_location</td>
+                <td><b>Isp1_description</td>
+                <td><b>Isp2_description</td>
+                <td><b>ASN</td>
+                <td><b>BGP_neighbor1</td>
+                <td><b>BGP_neighbor2</td>
+                <td><b>BGP_neighbor3</td>
+                <td><b>BGP_neighbor4</td>
+        </thead>
+
+        {% for row in rows %}
+        <tr>
+            <td>{{row["hostname"]}}</td>
+            <td>{{row["model"]}}</td>
+            <td>{{row["firmware"]}}</td>
+            <td>{{row["serial"]}}</td>
+            <td>{{row["vendor"]}}</td>
+            <td>{{row["uptime"]}}</td>
+            <td>{{row["supernet"]}}</td>
+            <td>{{row["loopback"]}}</td>
+            <td>{{row["isp1"]}}</td>
+            <td>{{row["core_Link"]}}</td>
+            <td>{{row["isp2"]}}</td>
+            <td>{{row["st0_0"]}}</td>
+            <td>{{row["st0_1"]}}</td>
+            <td>{{row["st0_10"]}}</td>
+            <td>{{row["st0_11"]}}</td>
+            <td>{{row["neighbor_device"]}}</td>
+            <td>{{row["neighbor_port"]}}</td>
+            <td>{{row["smnp_location"]}}</td>
+            <td>{{row["isp1_desc"]}}</td>
+            <td>{{row["isp2_desc"]}}</td>
+            <td>{{row["asn"]}}</td>
+            <td>{{row["bgp_neighbor1"]}}</td>
+            <td>{{row["bgp_neighbor2"]}}</td>
+            <td>{{row["bgp_neighbor3"]}}</td>
+            <td>{{row["bgp_neighbor4"]}}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br><br>
+</body>
+
+</html>

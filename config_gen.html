@@ -1,0 +1,310 @@
+<head>
+
+    <title>Network Engineering</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/map.js"></script>
+    <style>
+        .fakeimg {
+            height: 200px;
+            background: #aaa;
+        }
+    </style>
+
+
+    <div class="jumbotron text-center" style="margin-bottom:0">
+        <h1>Welcome to Config Generator 2.5</h1>
+        <p>Auto create Company Standard Templated configs</p>
+    </div>
+
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <a class="navbar-brand" href="{{ url_for('home') }}">Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/config_gen/">Config Gen</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/ip_plan/">Ip Plan</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/inventory/">Inventory</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/inventory/">Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Wiki</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <style>
+        .flex-container {
+            display: flex;
+        }
+
+        .flex-child {
+            flex: .08;
+            border: 2px solid Blue;
+        }
+
+        .flex-child:first-child {
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <br>
+    <span> Select your <b>Firewall</b> Type and if it's a <b>Cluster</b> or not</span>
+    <div class="flex-container">
+        <div class="flex-child magenta">
+
+            <form action="/config_gen/" method="post">
+
+                <input type="radio" name="Model" value="SRX210" onChange="modelChanged()">
+                <label for="SRX210"> SRX210</label><br>
+                <input type="radio" name="Model" value="SRX240" onChange="modelChanged()">
+                <label for="SRX240"> SRX240</label><br>
+                <input type="radio" name="Model" value="SRX300" onChange="modelChanged()" checked>
+                <label for="SRX300"> SRX300</label><br>
+                <input type="radio" name="Model" value="SRX320" onChange="modelChanged()">
+                <label for="SRX320"> SRX320</label><br>
+                <input type="radio" name="Model" value="SRX340" onChange="modelChanged()">
+                <label for="SRX340"> SRX340</label><br>
+                <input type="radio" name="Model" value="SRX1500" onChange="modelChanged()">
+                <label for="SRX1500"> SRX1500</label><br>
+        </div>
+
+        <div class="flex-child green">
+            <input type="radio" id="Single" name="EF_Type" value="Single" onChange="efChanged()" checked>
+            <label for="male">Single</label><br>
+            <input type="radio" id="Cluster" name="EF_Type" value="Cluster" onChange="efChanged()">
+            <label for="Cluster">Cluster</label><br>
+        </div>
+
+    </div>
+    <br>
+    <span> Select your <b>Core Switch</b> type and number of Switches in the <b>Core</b></span>
+    <div class="flex-container">
+
+        <div class="flex-child magenta">
+            <input type="radio" name="Core" value="EX2200-12p">
+            <label for="EX2200-12c"> EX2200-12c</label><br>
+            <input type="radio" name="Core" value="EX2200-24p">
+            <label for="EX2200-24p"> EX2200-24p</label><br>
+            <input type="radio" name="Core" value="EX2200-48p">
+            <label for="EX2200-48p"> EX2200-48p</label><br>
+            <input type="radio" name="Core" value="EX2300-12p">
+            <label for="EX2300-12p"> EX2300-12p</label><br>
+            <input type="radio" name="Core" value="EX2300-24p">
+            <label for="EX2300-24p"> EX2300-24p</label><br>
+            <input type="radio" name="Core" value="EX2300-48p" checked>
+            <label for="EX2300-48p"> EX2300-48p</label><br>
+            <input type="radio" name="Core" value="EX4300-24p">
+            <label for="EX4300-24p"> EX4300-24p</label><br>
+            <input type="radio" name="Core" value="EX4300-48p">
+            <label for="EX4300-48p"> EX4300-48p</label><br>
+            <input type="radio" name="Core" value="EX4600-24p">
+            <label for="EX4300-48p"> EX4600-24p</label><br>
+        </div>
+
+        <div class="flex-child green">
+            <input type="radio" id="Single" name="VC_Core" value="1" onChange="coreChanged()" checked>
+            <label for="Single">Single</label><br>
+            <input type="radio" id="Two" name="VC_Core" value="2" onChange="coreChanged()">
+            <label for="Two">Two</label><br>
+            <input type="radio" id="Three" name="VC_Core" value="3" onChange="coreChanged()">
+            <label for="Three">Three</label><br>
+            <input type="radio" id="Four" name="VC_Core" value="4" onChange="coreChanged()">
+            <label for="Four">Four</label><br>
+        </div>
+
+    </div>
+    <br>
+    <span> Select your <b>Access Switch</b> type and number of Switches in the VC for <b>Access</b></span>
+    <div class="flex-container">
+
+        <div class="flex-child magenta">
+            <input type="radio" name="Switch" value="EX2200-12c">
+            <label for="EX2200-12c"> EX2200-12c</label><br>
+            <input type="radio" name="Switch" value="EX2200-24p">
+            <label for="EX2200-24p"> EX2200-24p</label><br>
+            <input type="radio" name="Switch" value="EX2200-48p">
+            <label for="EX2200-48p"> EX2200-48p</label><br>
+            <input type="radio" name="Switch" value="EX2300-12p">
+            <label for="EX2300-12p"> EX2300-12p</label><br>
+            <input type="radio" name="Switch" value="EX2300-24p">
+            <label for="EX2300-24p"> EX2300-24p</label><br>
+            <input type="radio" name="Switch" value="EX2300-48p" checked>
+            <label for="EX2300-48p"> EX2300-48p</label><br>
+            <input type="radio" name="Switch" value="EX4300-24p">
+            <label for="EX4300-24p"> EX4300-24p</label><br>
+            <input type="radio" name="Switch" value="EX4300-48p">
+            <label for="EX4300-48p"> EX4300-48p</label><br>
+        </div>
+
+        <div class="flex-child green">
+            <input type="radio" id="None" name="VC" value="0" onChange="vcChanged()" checked>
+            <label for="None">None</label><br>
+            <input type="radio" id="Single" name="VC" value="1" onChange="vcChanged()">
+            <label for="Single">Single</label><br>
+            <input type="radio" id="Two" name="VC" value="2" onChange="vcChanged()">
+            <label for="Two">Two</label><br>
+            <input type="radio" id="Three" name="VC" value="3" onChange="vcChanged()">
+            <label for="Three">Three</label><br>
+            <input type="radio" id="Four" name="VC" value="4" onChange="vcChanged()">
+            <label for="Four">Four</label><br>
+        </div>
+
+    </div>
+    <br>
+    <div class="flex-container">
+        <span> Is this Site <b>DHCP?</b> &#160; &#160; &#160; &#160; &#160;</span>
+        <div class="flex-child green">
+            <input type="radio" id="No" name="dhcp" value="No" onChange="dhcpChanged()" checked>
+            <label for="No">No</label><br>
+            <input type="radio" id="Yes" name="dhcp" value="Yes" onChange="dhcpChanged()">
+            <label for="Yes">Yes</label><br>
+        </div>
+    </div>
+    <br>
+    <b>
+        <p style="color:red">*<b>These fields MUST be filled in exactly as described to prevent any problems with how
+                the configuration will be printed. See Examples for more detail.</p>
+        <label for="hostname">EF Hostname:&#160; &#160; &#160; &#160; &#160;&#160;&#160;&#160;&#160;&#160;&#160;
+        </label><input type"text" id="hostname" name="hostname" value=""> <b>Example: GSU-SACRAMENTO-3EF01 if two names
+            use _ like CCI-Anaheim_Jefferson-2EF01</b><b style="color:red">*</b><br>
+        <label for="bgp_asn">What is BGP ASN: &#160;&#160;&#160;&#160;
+        </label><input type"text" id="bgp_asn" name="bgp_asn" value=""> <b>Example: What is BGP ASN: (64512 -
+            65534)</b><b style="color:red">*</b><br>
+        <label for="site_mailing_address">Mailing Address: &#160;&#160;&#160;&#160;&#160;&#160;&#160;
+        </label><input type"text" id="site_mailing_address" name="site_mailing_address" value=""> <b>Mailing Address:
+            4247 Moccasin Trl</b><b style="color:red">*</b><br>
+        <label for="site_supernet">Site supernet:
+            &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+        </label><input type"text" id="site_supernet" name="site_supernet" value=""> <b>Site supernet? (x.x.x.x/x)</b><b
+            style="color:red">*</b><br><br>
+
+        <label for="wan1_isp_name">WAN 1 ISP Name: &#160;&#160;&#160;&#160;
+        </label><input type"text" id="wan1_isp_name" name="wan1_isp_name" value=""> <b>WAN 1 ISP Name (Comcast,
+            Centurylink, ETC)</b><br>
+        <label for="wan1_isp_support_num">WAN 1 ISP Support #:&#160;
+        </label><input type"text" id="wan1_isp_support_num" name="wan1_isp_support_num" value=""> <b>WAN 1 ISP CKT
+            ID</b><br>
+        <label for="wan1_isp_ckid">WAN 1 ISP Circuit ID :&#160;
+        </label><input type"text" id="wan1_isp_ckid" name="wan1_isp_ckid" value=""> <b>WAN 1 ISP CKT ID</b><br>
+        <label for="wan1_isp_up">WAN 1 ISP Upload Speed:&#160;
+        </label><input type"text" id="wan1_isp_up" name="wan1_isp_up" value=""> <b>(provide suffix (b, k, m, g,
+            etc.)</b><br>
+        <label for="wan1_isp_down">WAN 1 ISP Download Speed:&#160;
+        </label><input type"text" id="wan1_isp_down" name="wan1_isp_down" value=""> <b>(provide suffix (b, k, m, g,
+            etc.)</b><br>
+
+        <span id="wan1_isp_ip"><label for="wan1_isp_ip">WAN 1 ISP
+                IP:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="wan1_isp_ip" value=""> <b>WAN 1 ISP IP x.x.x.x/xx :</b></span><br>
+        <span id="wan1_isp_gw"><label for="wan1_isp_gw">WAN 1 ISP
+                GW:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="wan1_isp_gw" value=""> <b>WAN 1 ISP GW x.x.x.x :</b></span><br><br>
+
+        <span id="wan2_isp_name"><label for="wan2_isp_name">WAN 2 ISP Name: &#160;&#160;&#160;&#160;
+            </label><input type"text" name="wan2_isp_name" value=""> <b>WAN 2 ISP Name (Comcast, Centurylink,
+                ETC)</b><br></span>
+        <span id="wan2_isp_support_num"><label for="wan2_isp_support_num">WAN 2 ISP Support #:&#160;
+            </label><input type"text" name="wan2_isp_support_num" value=""> <b>WAN 2 ISP CKT ID</b><br></span>
+        <span id="wan2_isp_ckid"><label for="wan2_isp_ckid">WAN 2 ISP Circuit ID :&#160;
+            </label><input type"text" name="wan2_isp_ckid" value=""> <b>WAN 2 ISP CKT ID</b><br></span>
+        <span id="wan2_isp_up"><label for="wan2_isp_up">WAN 2 ISP Upload Speed:&#160;
+            </label><input type"text" name="wan2_isp_up" value=""> <b>(provide suffix (b, k, m, g, etc.)</b><br></span>
+        <span id="wan2_isp_down"><label for="wan2_isp_down">WAN 2 ISP Download Speed:&#160;
+            </label><input type"text" name="wan2_isp_down" value=""> <b>(provide suffix (b, k, m, g,
+                etc.)</b><br></span>
+        <span id="wan2_isp_ip"><label for="wan2_isp_ip">WAN 2 ISP
+                IP:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="wan2_isp_ip" value=""> <b>WAN 2 ISP IP x.x.x.x/xx :</b><br></span>
+        <span id="wan2_isp_gw"><label for="wan2_isp_gw">WAN 2 ISP
+                GW:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="wan2_isp_gw" value=""> <b>WAN 2 ISP GW x.x.x.x :</b><br></span>
+
+        <span id="st_tun2"><label for="st_tun2">ST Tunnel 2
+                Unit:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="st_tun2" value=""> <b>ST Tunnel 2 Unit "4277" :</b><br><br></span>
+
+        <label for="atl_tun1_ip">What is the ATL Tunnel IP:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+        </label><input type"text" id="atl_tun1_ip" name="atl_tun1_ip" value=""> <b>What is the ATL Tunnel IP x.x.x.x
+            :</b><br>
+        <label for="site_tun1_ip">What is the ATL Site Tunnel IP:&#160;&#160;&#160;&#160;&#160;
+        </label><input type"text" id="site_tun1_ip" name="site_tun1_ip" value=""> <b>What is the Site Tunnel IP x.x.x.x
+            :</b><br>
+        <label for="dal_tun1_ip">What is the Dal Tunnel IP:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+        </label><input type"text" id="dal_tun1_ip" name="dal_tun1_ip" value=""> <b>What is the Dal Tunnel IP x.x.x.x
+            :</b><br>
+        <label for="site_dal_tun1_ip">What is the DAL Site Tunnel IP:&#160;&#160;&#160;&#160;
+        </label><input type"text" id="site_dal_tun1_ip" name="site_dal_tun1_ip" value=""> <b>what is the Site to Dal
+            Tunnel IP x.x.x.x :</b><br><br>
+
+
+        <span id="atl_tun2_ip"><label for="atl_tun2_ip">What is the ATL Tunnel 2
+                IP:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="atl_tun2_ip" value=""> <b>What is the ATL Tunnel IP x.x.x.x :</b><br></span>
+        <span id="site_tun2_ip"><label for="site_tun2_ip">What is the ATL Site Tunnel 2
+                IP:&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="site_tun2_ip" value=""> <b>What is the Site Tunnel IP x.x.x.x
+                :</b><br></span>
+        <span id="dal_tun2_ip"><label for="dal_tun2_ip">What is the Dal Tunnel 2
+                IP:&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="dal_tun2_ip" value=""> <b>What is the Dal Tunnel IP x.x.x.x :</b><br></span>
+        <span id="site_dal_tun2_ip"><label for="site_dal_tun2_ip">What is the DAL Site Tunnel 2
+                IP:&#160;&#160;&#160;&#160;
+            </label><input type"text" name="site_dal_tun2_ip" value=""> <b>what is the Site to Dal Tunnel IP x.x.x.x
+                :</b><br></span><br>
+
+
+        <span id="cs_Serial_n0"><label for="cs_Serial_n0">CS Serial Number N0
+                :&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="cs_Serial_n0" value=""> <b>Serial Number for CS Serial Number
+                N0:</b><br></span>
+        <span id="cs_Serial_n1"><label for="cs_Serial_n1">CS Serial Number N1
+                :&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="cs_Serial_n1" value=""> <b>Serial Number for CS Serial Number
+                N1:</b><br></span>
+        <span id="cs_Serial_n2"><label for="cs_Serial_n2">CS Serial Number N2
+                :&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="cs_Serial_n2" value=""> <b>Serial Number for CS Serial Number
+                N2:</b><br></span>
+        <span id="cs_Serial_n3"><label for="cs_Serial_n3">CS Serial Number N3
+                :&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="cs_Serial_n3" value=""> <b>Serial Number for CS Serial Number
+                N3:</b><br><br></span>
+
+        <span id="vc_Serial_n0"><label for="vc_Serial_n0">VC Serial Number N0
+                :&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="vc_Serial_n0" value=""> <b>Serial Number for VC Serial Number
+                N0:</b><br></span>
+        <span id="vc_Serial_n1"><label for="vc_Serial_n1">VC Serial Number N1
+                :&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="vc_Serial_n1" value=""> <b>Serial Number for CS Serial Number
+                N1:</b><br></span>
+        <span id="vc_Serial_n2"><label for="vc_Serial_n2">VC Serial Number N2
+                :&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="vc_Serial_n2" value=""> <b>Serial Number for CS Serial Number
+                N2:</b><br></span>
+        <span id="vc_Serial_n3"><label for="vc_Serial_n3">VC Serial Number N3
+                :&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;
+            </label><input type"text" name="vc_Serial_n3" value=""> <b>Serial Number for CS Serial Number
+                N3:</b><br></span>
+
+
+        <br><input type="submit" value="Submit">
+        </form>
+</body>

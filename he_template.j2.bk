@@ -1,0 +1,188 @@
+###########################################################################################################
+# {{data['<PRESHARED_KEY>']}} 	- Preshared key for sub ( if new )  (SUB!psk1234)
+# {{data['<SUB>']}}				- Subsidiary (DII)
+# {{data['<SITE>']}}		- Location (RCA)
+# {{data['<SITE_SUPERNET>']}}		- Site subnet (10.65.0.0/21)
+#
+# {{data['<TUN1_ST>']}}			- Tunnel 1 st0 interface number (4096)
+# {{data['<ATL_TUN1_PEER>']}} 	- IP address for the ATLANTA side for the head-end st0 interface for ISP1 (10.255.0.0)
+# {{data['<DAL_TUN1_PEER>']}}	- IP address for the DALLAS side for the head-end st0 internface for ISP1 (10.254.0.0)
+#
+#
+# {{data['<WAN1_IP>']}}			- IP address for ISP1 at the site  (4.1.2.3)
+# {{data['<ATL_TUN1_IP>']}}	    - IP address of remote peer (st0.0) (10.255.0.1)
+# {{data['<DAL_TUN1_IP>']}}	    - IP address of remote peer (st0.10) (10.254.0.1)
+#
+# {{data['<BGP_ASN>']}}			- Remote site BGP ASN number   (65123)
+#
+{% if data['<EF_TYPE>'] == 'Cluster' %}
+# {{data['<TUN2_ST>']}}			- Tunnel 2 st0 interface number (4097)
+# {{data['<WAN2_IP>']}}			- IP address for ISP2 at the site  (12.13.14.15)
+# {{data['<ATL_TUN2_IP>']}} 	- IP address for the ATLANTA side for the head-end st0 interface for ISP2 (10.255.0.2)
+# {{data['<DAL_TUN2_IP>']}} 	- IP address for the DALLAS side for the head-end st0 interface for ISP2 (10.254.0.2)
+# {{data['<ATL_TUN2_PEER>']}} 	- Ip address of remote peer (st0.1) (10.255.0.3)
+# {{data['<DAL_TUN2_IP>']}} 	- Ip address of remote peer (st0.11) (10.254.0.3)
+{% endif %}
+#
+#
+###########################################################################################################
+
+
+
+### ATLANTA HEAD-END CONFIGURATION
+
+### IKE-POLICY-{{data['<SUB>']}}-DYC19 should only be configured once per subsidiary
+set groups GRP_{{data['<SUB>']}} security ike policy IKE-POLICY-{{data['<SUB>']}}-DYC19 mode main
+set groups GRP_{{data['<SUB>']}} security ike policy IKE-POLICY-{{data['<SUB>']}}-DYC19 proposals IKE-DYC19
+set groups GRP_{{data['<SUB>']}} security ike policy IKE-POLICY-{{data['<SUB>']}}-DYC19 pre-shared-key ascii-text {{data['<PRESHARED_KEY>']}}
+
+### BGP POLICY NEEDS TO BE CONFIGURED ONCE PER SUB TO SUPPORT NEW EXPORT/IMPORT POLICY ###
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 passive
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 mtu-discovery
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 import BGP-SPOKE_TO_HUB-IMPORT
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 family inet unicast
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 family inet6 unicast
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 export BGP-HUB-EXPORT
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 export BGP-HUB_TO_SPOKE-EXPORT
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 graceful-restart
+
+### THIS IS PER-SITE ADDITIONAL CONFIGURATION
+set groups GRP_{{data['<SUB>']}} security zones security-zone VPN address-book address NET-{{data['<SUB>']}}-{{data['<SITE>']}} {{data['<SITE_SUPERNET>']}}
+set groups GRP_{{data['<SUB>']}} security zones security-zone VPN address-book address-set NET_{{data['<SUB>']}} address NET-{{data['<SUB>']}}-{{data['<SITE>']}}
+
+### CREATE ST0 INTERFACES FOR REMOTE SITE
+set groups GRP_{{data['<SUB>']}} interfaces st0 unit {{data['<TUN1_ST>']}} description {{data['<SUB>']}}-{{data['<SITE>']}}
+set groups GRP_{{data['<SUB>']}} interfaces st0 unit {{data['<TUN1_ST>']}} family inet mtu 1414
+set groups GRP_{{data['<SUB>']}} interfaces st0 unit {{data['<TUN1_ST>']}} family inet address {{data['<ATL_TUN1_IP>']}}/31
+
+{% if data['<EF_TYPE>'] == 'Cluster' %}
+set groups GRP_{{data['<SUB>']}} interfaces st0 unit {{data['<TUN2_ST>']}} description {{data['<SUB>']}}-{{data['<SITE>']}}
+set groups GRP_{{data['<SUB>']}} interfaces st0 unit {{data['<TUN2_ST>']}} family inet mtu 1414
+set groups GRP_{{data['<SUB>']}} interfaces st0 unit {{data['<TUN2_ST>']}} family inet address {{data['<ATL_TUN2_PEER>']}}/31
+{% endif %}
+
+set groups GRP_{{data['<SUB>']}} security zones security-zone VPN interfaces st0.{{data['<TUN1_ST>']}}
+
+{% if data['<EF_TYPE>'] == 'Cluster' %}
+set groups GRP_{{data['<SUB>']}} security zones security-zone VPN interfaces st0.{{data['<TUN2_ST>']}}
+{% endif %}
+
+### IKE IPSEC POLICY FOR ISP1
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 ike-policy IKE-POLICY-{{data['<SUB>']}}-DYC19
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 address {{data['<WAN1_IP>']}}
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 dead-peer-detection optimized
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 dead-peer-detection interval 10
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 dead-peer-detection threshold 3
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 external-interface reth0.890
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 version v2-only
+
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 bind-interface st0.{{data['<TUN1_ST>']}}
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 vpn-monitor optimized
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 vpn-monitor source-interface st0.{{data['<TUN1_ST>']}}
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 vpn-monitor destination-ip {{data['<ATL_TUN1_PEER>']}}
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 ike ipsec-policy IPSEC-POLICY-DYC19
+
+{% if data['<EF_TYPE>'] == 'Cluster' %}
+### IKE IPSEC POLICY FOR ISP2
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 ike-policy IKE-POLICY-{{data['<SUB>']}}-DYC19
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 address {{data['<WAN2_IP>']}}
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 dead-peer-detection optimized
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 dead-peer-detection interval 10
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 dead-peer-detection threshold 3
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 external-interface reth0.890
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 version v2-only
+
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 bind-interface st0.{{data['<TUN2_ST>']}}
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 vpn-monitor optimized
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 vpn-monitor source-interface st0.{{data['<TUN2_ST>']}}
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 vpn-monitor destination-ip {{data['<ATL_TUN2_PEER>']}}
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 ike ipsec-policy IPSEC-POLICY-DYC19
+{% endif %}
+
+### BGP CONFIGURATION FOR THE SITE
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 neighbor {{data['<ATL_TUN1_PEER>']}}  description {{data['<SUB>']}}-{{data['<SITE>']}}-ISP1
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 neighbor {{data['<ATL_TUN1_PEER>']}}  peer-as {{data['<BGP_ASN>']}}
+
+{% if data['<EF_TYPE>'] == 'Cluster' %}
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 neighbor {{data['<ATL_TUN2_PEER>']}} description {{data['<SUB>']}}-{{data['<SITE>']}}-ISP2
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 neighbor {{data['<ATL_TUN2_PEER>']}} peer-as {{data['<BGP_ASN>']}}
+{% endif %}
+
+#######################################################################################################
+### DALLAS HEAD-END CONFIGURATION
+
+### IKE-POLICY-{{data['<SUB>']}}-DYC19 should only be configured once per subsidiary
+set groups GRP_{{data['<SUB>']}} security ike policy IKE-POLICY-{{data['<SUB>']}}-DYC19 mode main
+set groups GRP_{{data['<SUB>']}} security ike policy IKE-POLICY-{{data['<SUB>']}}-DYC19 proposals IKE-DYC19
+set groups GRP_{{data['<SUB>']}} security ike policy IKE-POLICY-{{data['<SUB>']}}-DYC19 pre-shared-key ascii-text {{data['<PRESHARED_KEY>']}}
+
+### BGP POLICY NEEDS TO BE CONFIGURED ONCE PER SUB TO SUPPORT NEW EXPORT/IMPORT POLICY ###
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 passive
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 mtu-discovery
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 import BGP-SPOKE_TO_HUB-IMPORT
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 family inet unicast
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 family inet6 unicast
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 export BGP-HUB-EXPORT
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 export BGP-HUB_TO_SPOKE-EXPORT
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 graceful-restart
+
+### THIS IS PER-SITE ADDITIONAL CONFIGURATION
+set groups GRP_{{data['<SUB>']}} interfaces st0 unit {{data['<TUN1_ST>']}} description {{data['<SUB>']}}-{{data['<SITE>']}}
+set groups GRP_{{data['<SUB>']}} interfaces st0 unit {{data['<TUN1_ST>']}} family inet mtu 1414
+set groups GRP_{{data['<SUB>']}} interfaces st0 unit {{data['<TUN1_ST>']}} family inet address {{data['<DAL_TUN1_PEER>']}}/31
+
+{% if data['<EF_TYPE>'] == 'Cluster' %}
+set groups GRP_{{data['<SUB>']}} interfaces st0 unit {{data['<TUN2_ST>']}} description {{data['<SUB>']}}-{{data['<SITE>']}}
+set groups GRP_{{data['<SUB>']}} interfaces st0 unit {{data['<TUN2_ST>']}} family inet mtu 1414
+set groups GRP_{{data['<SUB>']}} interfaces st0 unit {{data['<TUN2_ST>']}} family inet address {{data['<DAL_TUN2_PEER>']}}/31
+{% endif %}
+
+set groups GRP_{{data['<SUB>']}} security zones security-zone VPN interfaces st0.{{data['<TUN1_ST>']}}
+
+{% if data['<EF_TYPE>'] == 'Cluster' %}
+set groups GRP_{{data['<SUB>']}} security zones security-zone VPN interfaces st0.{{data['<TUN2_ST>']}}
+{% endif %}
+
+
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 ike-policy IKE-POLICY-{{data['<SUB>']}}-DYC19
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 address {{data['<WAN1_IP>']}}
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 dead-peer-detection optimized
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 dead-peer-detection interval 10
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 dead-peer-detection threshold 3
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 external-interface lt-0/0/0.0
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 version v2-only
+
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 bind-interface st0.{{data['<TUN1_ST>']}}
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 vpn-monitor optimized
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 vpn-monitor source-interface st0.{{data['<TUN1_ST>']}}
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 vpn-monitor destination-ip {{data['<DAL_TUN1_PEER>']}}
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 ike ipsec-policy IPSEC-POLICY-DYC19
+
+{% if data['<EF_TYPE>'] == 'Cluster' %}
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 ike-policy IKE-POLICY-{{data['<SUB>']}}-DYC19
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 address {{data['<WAN2_IP>']}}
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 dead-peer-detection optimized
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 dead-peer-detection interval 10
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 dead-peer-detection threshold 3
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 external-interface lt-0/0/0.0
+set groups GRP_{{data['<SUB>']}} security ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 version v2-only
+
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 bind-interface st0.{{data['<TUN1_ST>']}}
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 vpn-monitor optimized
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 vpn-monitor source-interface st0.{{data['<TUN1_ST>']}}
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 vpn-monitor destination-ip {{data['<DAL_TUN2_PEER>']}}
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 ike gateway IKE-GW-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP2 ike ipsec-policy IPSEC-POLICY-DYC19
+{% endif %}
+
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 neighbor {{data['<DAL_TUN1_PEER>']}} description {{data['<SUB>']}}-{{data['<SITE>']}}-ISP1
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 neighbor {{data['<DAL_TUN1_PEER>']}} peer-as {{data['<BGP_ASN>']}}
+
+{% if data['<EF_TYPE>'] == 'Cluster' %}
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 neighbor {{data['<DAL_TUN2_PEER>']}} description {{data['<SUB>']}}-{{data['<SITE>']}}-ISP2
+set groups GRP_{{data['<SUB>']}} protocols bgp group BGP-VPN-{{data['<SUB>']}}-DYC19 neighbor {{data['<DAL_TUN2_PEER>']}} peer-as {{data['<BGP_ASN>']}}
+{% endif %}
+

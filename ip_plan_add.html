@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Network Engineer - IP Plan - Add</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+
+    <div class="jumbotron text-center" style="margin-bottom:0">
+        <h1>IP Plan - Add</h1>
+        <p>Enterprise Network IP Plan!</p>
+    </div>
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <a class="navbar-brand" href="/">Home</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="collapsibleNavbar">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" href="/config_gen/">Config Gen</a>
+                </li>
+                <!-- Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle active" href="/ip_plan/" id="ip_plan" dat a-toggle="dropdown">
+                        IP Plan
+                    </a>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="/ip_plan/">IP_Plan</a>
+                        <a class="dropdown-item active" href="/ip_plan_add/">Add</a>
+                        <a class="dropdown-item" href="#">Delete</a>
+                        <a class="dropdown-item" href="#">Modify</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/inventory/">Inventory</a>
+                <li class="nav-item">
+                    <a class="nav-link" href="/reports/">Reports</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Wiki</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <br>
+    <form method="GET" action="/ip_plan_add/" class="form">
+        <label for="hostname">EF Hostname:</label>
+        <input type"text" id="hostname" name="hostname" value=""> <b>Example: GSU-SACRAMENTO-3EF01 if two names use _
+            like CCI-Anaheim_Jefferson-2EF01</b><b style="color:red">*</b><br>
+        <label for="supernet">Supernet</label>
+        <input type"text" id="supernet" name="supernet" value=""> <b>Site supernet? (x.x.x.x/x)</b><b
+            style="color:red">*</b>
+        <label for="loopback">Loopback</label>
+        <input type"text" id="loopback" name="loopback" value=""> <b>Site loopback? (10.x.x.255/32)</b><b
+            style="color:red">*</b>
+        <label for="isp1">ISP1</label>
+        <input type"text" id="isp1" name="isp1" value=""> <b>Site ISP1? (x.x.x.x/x)</b><b style="color:red">*</b>
+        <label for="isp2">ISP2</label>
+        <input type"text" id="isp2" name="isp2" value=""> <b>Site ISP2? (x.x.x.x/x)</b><b style="color:red">*</b>
+        <label for="st0_0">St0.0</label>
+        <input type"text" id="st0_0" name="st0_0" value=""> <b>Site st0.0? ATL Tun (x.x.x.x/x)</b><b
+            style="color:red">*</b>
+        <label for="st0_1">St0.1</label>
+        <input type"text" id="st0_1" name="st0_1" value=""> <b>Site st0.1? ATL Tun 2 (x.x.x.x/x)</b><b
+            style="color:red">*</b>
+        <label for="st0_10">St0.10</label>
+        <input type"text" id="st0_10" name="st0_10" value=""> <b>Site st0.10? DAL Tun (x.x.x.x/x)</b><b
+            style="color:red">*</b>
+        <label for="st0_11">St0.11</label>
+        <input type"text" id="st0_11" name="st0_11" value=""> <b>Site st0.11? DAL Tun 2 (x.x.x.x/x)</b><b
+            style="color:red">*</b>
+        <label for="asn">ASN</label>
+        <input type"text" id="asn" name="asn" value=""> <b>ASN Number: Example: What is BGP ASN: (64512 - 65534)</b><b
+            style="color:red">*</b>
+        <br><br>
+        <button type="submit">Update results</button>
+    </form>
+</body>
+
+</html>
