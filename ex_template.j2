@@ -97,7 +97,7 @@ system {
         {% endif %}
     }
     root-authentication {
-        encrypted-password "$1$PZCAPSc/$lyZ20dvyOGTaaQ6NiCoFn/"; ## SECRET-DATA
+        encrypted-password ""; ## SECRET-DATA
     }
     name-server {
         10.3.33.55;
@@ -105,7 +105,7 @@ system {
     radius-server {
         10.132.8.128 {
             port 1812;
-            secret "$9$NC-VsUjqf5FGUz69Cu0vWLN-wgoZjk.WLGi.mTQcylKvW"; ## SECRET-DATA
+            secret :"; ## SECRET-DATA
             timeout 1;
             {%- if data['<ACCESS>'] == 'No' %}
             source-address {{data['<LOOPBACK>']}};
@@ -116,7 +116,7 @@ system {
         }
         10.132.10.152 {
             port 1812;
-            secret "$9$NC-VsUjqf5FGUz69Cu0vWLN-wgoZjk.WLGi.mTQcylKvW"; ## SECRET-DATA
+            secret ""; ## SECRET-DATA
             timeout 1;
 	{%- if data['<ACCESS>'] == 'No' %}
         source-address {{data['<LOOPBACK>']}};
@@ -133,19 +133,12 @@ system {
         }
     }
     login {
-        message "\n\nWARNING: Restricted System, Property of Dycom, Inc. or its subsidiaries.\nThis computer system is for OFFICIAL USE ONLY by specifically authorized \npersonnel and includes confidential, proprietary and privileged information. \nThis system may be subject to monitoring. No expectation of privacy is to be \nassumed. Unauthorized attempts to upload, download or change information on \nthis system or other unauthorized activities are subject to disciplinary action \nincluding termination and criminal and civil prosecution. By continuing to use \nthis system you indicate your awareness of and consent to these terms and \nconditions of use.\n\n\n";
+        message "\n\nWARNING: Restricted System, Property of . or its subsidiaries.\nThis computer system is for OFFICIAL USE ONLY by specifically authorized \npersonnel and includes confidential, proprietary and privileged information. \nThis system may be subject to monitoring. No expectation of privacy is to be \nassumed. Unauthorized attempts to upload, download or change information on \nthis system or other unauthorized activities are subject to disciplinary action \nincluding termination and criminal and civil prosecution. By continuing to use \nthis system you indicate your awareness of and consent to these terms and \nconditions of use.\n\n\n";
         retry-options {
             tries-before-disconnect 3;
             backoff-threshold 1;
             backoff-factor 5;
             lockout-period 10;
-        }
-        user dycom {
-            uid 2001;
-            class super-user;
-            authentication {
-                encrypted-password "$1$yCWhAN5c$sNswlOhij0F.UiRXFku0K0"; ## SECRET-DATA
-            }
         }
         user remote {
             full-name "RADIUS Remote Users";
@@ -759,13 +752,13 @@ interfaces {
     {%- endif %}
 }
 snmp {
-    community dycom {
+    community user {
         authorization read-only;
     }
     trap-options {
         source-address lo0;
     }
-    trap-group dycom {
+    trap-group user {
         version v2;
         targets {
             10.3.4.27;
