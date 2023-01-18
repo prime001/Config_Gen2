@@ -96,7 +96,7 @@ set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data
 set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 ike ipsec-policy IPSEC-POLICY-DYC19
 {%- endif %}
 {%- if data['<DHCP>'] == 'Yes' %}
-set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 ike ipsec-policy IPSEC-POLICY-DYCOM
+set groups GRP_{{data['<SUB>']}} security ipsec vpn VPN-{{data['<SUB>']}}-{{data['<SITE>']}}-ISP1 ike ipsec-policy IPSEC-POLICY-
 {%- endif %}
 
 ### IKE IPSEC POLICY FOR ISP2
