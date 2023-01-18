@@ -75,11 +75,11 @@ groups {
         }
         policy-options {
             prefix-list DII-SNMP-HOSTS {
-                /* Dycom - ATL Jump Box Subnet */
+                /*  - ATL Jump Box Subnet */
                 10.3.0.0/24;
-                /* Dycom - ATL Netmon Subnet */
+                /*  - ATL Netmon Subnet */
                 10.3.4.0/24;
-                /* Dycom - AWS Management Subnet */
+                /*  - AWS Management Subnet */
                 10.135.0.0/23;
             }
             prefix-list localhost {
@@ -117,22 +117,8 @@ groups {
             prefix-list vrrp {
                 224.0.0.18/32;
             }
-            prefix-list DII-MGMT-SSH-PUBLIC-IP {
-                /* Dycom - AWS Public */
-                3.225.86.234/32;
-                /* Dycom - RCA ATT ISP */
-                12.247.119.196/30;
-                /* Dycom - Atlanta DC Internet */
-                65.167.210.0/24;
-                /* Dycom - Atlanta DC Internet */
-                162.244.184.0/21;
-                /* Dycom - RCA FPL ISP */
-                199.189.199.184/29;
-                /* Dycom - DC Internet */
-                209.64.224.0/19;
-            }
             prefix-list DII-RFC1918 {
-                /* Dycom - Internal Subnets */
+                /*  - Internal Subnets */
                 10.0.0.0/8;
                 172.16.0.0/12;
                 192.168.0.0/16;
@@ -301,7 +287,7 @@ system {
         {% endif %} 
     }
     root-authentication {
-        encrypted-password "$1$yCWhAN5c$sNswlOhij0F.UiRXFku0K0"; ## SECRET-DATA
+        encrypted-password ""; ## SECRET-DATA
     }
     name-server {
         10.3.33.55 source-address {{data['<EF_LOOPBACK>']}};
@@ -309,13 +295,13 @@ system {
     radius-server {
         10.132.8.128 {
             port 1812;
-            secret "$9$NC-VsUjqf5FGUz69Cu0vWLN-wgoZjk.WLGi.mTQcylKvW"; ## SECRET-DATA
+            secret ""; ## SECRET-DATA
             timeout 1;
             source-address {{data['<EF_LOOPBACK>']}};
         }
         10.132.10.152 {
             port 1812;
-            secret "$9$NC-VsUjqf5FGUz69Cu0vWLN-wgoZjk.WLGi.mTQcylKvW"; ## SECRET-DATA
+            secret "$"; ## SECRET-DATA
             timeout 1;
             source-address {{data['<EF_LOOPBACK>']}};
         }
@@ -330,7 +316,7 @@ system {
         }
     }
     login {
-        message "\n\nWARNING: Restricted System, Property of Dycom, Inc. or its subsidiaries.\nThis computer system is for OFFICIAL USE ONLY by specifically authorized \npersonnel and includes confidential, proprietary and privileged information. \nThis system may be subject to monitoring. No expectation of privacy is to be \nassumed. Unauthorized attempts to upload, download or change information on \nthis system or other unauthorized activities are subject to disciplinary action \nincluding termination and criminal and civil prosecution. By continuing to use \nthis system you indicate your awareness of and consent to these terms and \nconditions of use.\n\n\n";
+        message "\n\nWARNING: Restricted System, Property of . or its subsidiaries.\nThis computer system is for OFFICIAL USE ONLY by specifically authorized \npersonnel and includes confidential, proprietary and privileged information. \nThis system may be subject to monitoring. No expectation of privacy is to be \nassumed. Unauthorized attempts to upload, download or change information on \nthis system or other unauthorized activities are subject to disciplinary action \nincluding termination and criminal and civil prosecution. By continuing to use \nthis system you indicate your awareness of and consent to these terms and \nconditions of use.\n\n\n";
         retry-options {
             tries-before-disconnect 3;
             backoff-threshold 1;
@@ -340,11 +326,11 @@ system {
         {%- if data['<MODEL>'] is not in ['SRX210', 'SRX240'] %}
         idle-timeout 60;
         {%- endif %}
-        user dycom {
+        user user {
             uid 2001;
             class super-user;
             authentication {
-                encrypted-password "$1$yCWhAN5c$sNswlOhij0F.UiRXFku0K0"; ## SECRET-DATA
+                encrypted-password ""; ## SECRET-DATA
             }
         }
         user remote {
@@ -547,11 +533,11 @@ security {
         policy IKE-POLICY-DYNAMIC {
             mode aggressive;
             proposals IKE-PRE-G2-3DES-SHA;
-            pre-shared-key ascii-text "$9$e04KMLs2ojH.P5uBIhleW8X7NdVwgJUH7-jHqPQzevMXVw                                                   "; ## SECRET-DATA
+            pre-shared-key ascii-text " "; ## SECRET-DATA
         }
         policy IKEv2-POLICY-DYNAMIC {
             proposals IKE-PROPOSAL-DYC19;
-            pre-shared-key ascii-text "$9$NE-VsUjkTzn/CSlKW7NbwYg4aJGi.fzgoTz3/tpNdVYJG"                                                   ; ## SECRET-DATA
+            pre-shared-key ascii-text ""; ## SECRET-DATA
         }
         {%- endif %}
         gateway IKE-GW-ATL-P {
@@ -1191,13 +1177,13 @@ interfaces {
 }
 snmp {
     location "{{data['<SITE_ADDRESS>']}}";
-    community dycom {
+    community user {
         authorization read-only;
     }
     trap-options {
         source-address lo0;
     }
-    trap-group dycom {
+    trap-group user {
         version v2;
         targets {
             10.3.4.27;
